@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energia Alerta - Reportar</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+    }
+
+    header {
+        background: linear-gradient(to right, #ff9800, #ff5722);
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        
+    }
+
+    .container {
+        padding: 20px;
+        max-width: 500px;
+        margin: auto;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0 15px 0;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    textarea {
+        resize: none;
+        height: 80px;
+    }
+
+    button {
+        background-color: #ff5722;
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background-color: #b71c1c;
+    }
+
+    .sucesso {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #d4edda;
+        color: #155724;
+        border-radius: 8px;
+        display: none;
+        text-align: center;
+    }
+
+    .voltar {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 14px;
+        cursor: pointer;
+        color: #f0eaea;
+        font-weight: bold;
+        margin-right: 550px;
+    
+    }
+    img{
+        margin-left: 450px;
+    }
+    
+    
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <a href="EDM3.html">⬅</a> 
+</div>
+<h3>  Fazer Denuncia </h3>
+<img src="EUNICE-removebg-preview.png" alt="" width="7%">
+</header>
+<div class="container">
+    <form>
+
+    <label>Nome (opcional)</label>
+    <input type="text" id="nome" placeholder="Digite seu nome">
+
+
+    <label>Bairro</label>
+    <input type="text" id="bairro" placeholder="Digite seu bairro" required>
+
+    
+
+    <label>Descrição</label>
+    <textarea id="descricao" placeholder="Descreva o problema" required></textarea>
+
+    <label>Foto (opcional)</label>
+    <input type="file" accept="image/*">
+    </form>
+
+    <button type="submit">Enviar</button>
+
+    <div class="sucesso" id="mensagemSucesso">
+        ✅Enviada com sucesso!
+    </div>
+
+ 
+</div>
+
+<script>
+
+document.querySelector("button").addEventListener("click", function(e){
+    e.preventDefault();
+
+    let nome = document.getElementById("nome").value.trim();
+    let bairro = document.getElementById("bairro").value.trim();
+    let descricao = document.getElementById("descricao").value.trim();
+    let inputFoto = document.querySelector("input[type='file']");
+    let sucesso = document.getElementById("mensagemSucesso");
+
+    sucesso.style.display = "none";
+
+    if(bairro === "" || descricao === ""){
+        alert("Preencha os campos obrigatórios.");
+        return;
+    }
+
+    if(nome === ""){
+        nome = "Anônimo";
+    }
+
+    let leitor = new FileReader();
+
+    if(inputFoto.files.length > 0){
+
+        leitor.onload = function(){
+            salvarDenuncia(nome, bairro, descricao, leitor.result);
+        };
+
+        leitor.readAsDataURL(inputFoto.files[0]);
+
+    } else {
+        salvarDenuncia(nome, bairro, descricao, null);
+    }
+
+});
+
+function salvarDenuncia(nome, bairro, descricao, foto){
+
+    let denuncias = JSON.parse(localStorage.getItem("denuncias")) || [];
+
+    let novaDenuncia = {
+        nome: nome,
+        bairro: bairro,
+        descricao: descricao,
+        foto: foto,
+        status: "pendente",
+        data: new Date().toLocaleString()
+    };
+
+    denuncias.push(novaDenuncia);
+
+    localStorage.setItem("denuncias", JSON.stringify(denuncias));
+
+    document.getElementById("mensagemSucesso").style.display = "block";
+
+    // Limpar campos
+    document.getElementById("nome").value = "";
+    document.getElementById("bairro").value = "";
+    document.getElementById("descricao").value = "";
+    document.querySelector("input[type='file']").value = "";
+}
+
+</script>
+
+
+</body>
+</html>
